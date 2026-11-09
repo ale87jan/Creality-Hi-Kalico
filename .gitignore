@@ -24,3 +24,7 @@ site/
 env/
 venv/
 mkdocs-env/
+
+# Personal Claude Code settings
+CLAUDE.local.md
+.claude/settings.local.json

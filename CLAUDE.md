@@ -20,27 +20,33 @@ holds code only.
 | Branch / remote | Role |
 | - | - |
 | `main` | Mirror of `upstream/main` (Jacob10383/kalico). Only fast-forward from upstream; never commit here |
-| `dev` | Default branch: all Hi work, feature branches start from here |
+| `dev` | Default branch: integration of Hi work. Receives task branches through pull requests |
+| `main-hi` | Stable Hi branch: receives `dev` (by pull request) once it works on the printer. The installer uses it |
+| `<type>/<topic>` | Task branches off `dev` (`feat/motor-stall-pins`, `fix/...`, `docs/...`) |
 | `origin` | `ale87jan/Creality-Hi-Kalico` |
 | `upstream` | `Jacob10383/kalico` (push disabled) |
 | `kalicocrew` | `KalicoCrew/kalico` (push disabled) |
 
-Sync with upstream:
+Flow: task branch off `dev` → pull request into `dev` (CI runs on pull requests) → when tested on the printer,
+pull request `dev` → `main-hi`. Never commit directly on `main`, `dev` or `main-hi`.
+
+Sync with upstream (the merge into `dev` also goes through a pull request):
 
 ```bash
 git fetch upstream
-git switch main && git merge --ff-only upstream/main
-git switch dev && git merge main
+git switch main && git merge --ff-only upstream/main && git push origin main
+git switch -c chore/sync-upstream dev && git merge main
 ```
 
 After each sync, re-check the Hi MCU compatibility (see Creality-Hi-CFW `docs/protocols/mcu.md`).
 
 ## Commits
 
-- Format `type(scope): description`, imperative, English, title <= 50 chars. Types: `feat`, `fix`, `refactor`,
-  `tune`, `docs`, `chore`. Scope `hi` for Hi-specific work.
-- Body: `CHANGES BY FILE:` (new files marked `[NEW]`) and `IMPROVEMENTS:`. No `Co-Authored-By` or
-  "Generated with" lines.
+- [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): description`, imperative,
+  English, title <= 72 chars (aim for 50). Optional free-form body explaining why.
+- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `perf`, `build`, `ci`, `chore`, `revert`. Scope `hi` or
+  the module (`motor`, `box`, `prtouch`, `z_align`...).
+- No `Co-Authored-By` or "Generated with" lines.
 - Atomic commits; never push or force-push unless asked.
 
 ## How Hi code is added
@@ -57,6 +63,9 @@ After each sync, re-check the Hi MCU compatibility (see Creality-Hi-CFW `docs/pr
 - Host tests run with pytest (`py.test -n auto`, see `.github/workflows/ci-build_test.yaml`); dev
   dependencies are in `pyproject.toml` (`uv sync`).
 - Lint/format with ruff (`pyproject.toml`).
+- GitHub Actions: only the pull request checks (`ci-build_test`, `ci-lintformat`, `ci-docs_test`) should run on
+  this fork. The publishing workflows inherited from Kalico (`cd-docker`, `cd-docs`, `ci-builder`,
+  `cd-bleeding-edge`, `release-monthly-tag`) must stay disabled.
 
 ## Safety rules
 

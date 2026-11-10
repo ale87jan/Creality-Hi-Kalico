@@ -203,3 +203,75 @@ def test_box_state_carries_temperature_and_humidity():
     state = cfs.get_box_state(BOX)
     assert (state["temperature_c"], state["humidity_pct"]) == (28, 36)
     assert state["loaded"] and cfs._box_env[BOX]["humidity_pct"] == 36
+
+
+def _stub(name, extra=""):
+    return f"""
+[gcode_macro {name}]
+rename_existing: _REAL_{name}
+gcode:
+  {{% set p = printer.toolhead.position %}}
+  {{% set log = printer['gcode_macro _REPORT'].log %}}
+  SET_GCODE_VARIABLE MACRO=_REPORT VARIABLE=log VALUE='"{{log}} {name}({{rawparams}})@{{"%.1f,%.1f,%.1f" % (p.x, p.y, p.z)}}"'
+  {extra}
+"""
+
+
+CHANGE_STUBS = (
+    """
+[homing_override]
+gcode:
+  SET_KINEMATIC_POSITION X=100 Y=90 Z=10
+
+[gcode_macro _REPORT]
+variable_log: ""
+gcode:
+  {% set p = printer.toolhead.position %}
+  {action_raise_error("log=%s end=%.1f,%.1f,%.1f t=%d"
+    % (log, p.x, p.y, p.z, printer.extruder.target))}
+"""
+    + _stub("CFS_CUT", "G0 X240 Y130")
+    + _stub("CFS_RETRUDE")
+    + _stub("CFS_EXTRUDE")
+    + _stub("CFS_FLUSH")
+)
+
+
+def run_change(tmp_path, gcode):
+    config = tmp_path / "printer.cfg"
+    config.write_text(
+        f"[include {PHASE5}]\n"
+        "[serial_485 serial485]\n"
+        f"serial: {tmp_path / 'no-such-port'}\n" + CHANGE_STUBS
+    )
+    gcode_file = tmp_path / "test.gcode"
+    gcode_file.write_text("G28\nM104 S215\n" + gcode + "_REPORT\n")
+    proc, _ = run_batch(gcode_file, tmp_path, config)
+    assert "Unknown command" not in proc.stderr
+    return proc.stderr
+
+
+def test_change_cuts_unloads_loads_and_purges_then_comes_back(tmp_path):
+    err = run_change(tmp_path, "T1 PREV=0\n")
+    # Cut with Z already lifted; everything else over the bin at Y=261.
+    assert (
+        "log= CFS_CUT()@100.0,90.0,13.0"
+        " CFS_RETRUDE(TOOL=0)@-18.5,261.0,13.0"
+        " CFS_EXTRUDE(TOOL=1)@-18.5,261.0,13.0"
+        " CFS_FLUSH()@-18.5,261.0,13.0"
+        " end=100.0,90.0,10.0 t=215"
+    ) in err
+
+
+def test_first_load_does_not_cut_or_unload(tmp_path):
+    # The module reports no loaded tool (-1) after start-up.
+    err = run_change(tmp_path, "T2\n")
+    assert (
+        "log= CFS_EXTRUDE(TOOL=2)@-18.5,261.0,13.0"
+        " CFS_FLUSH()@-18.5,261.0,13.0 end=100.0,90.0,10.0"
+    ) in err
+
+
+def test_change_to_the_loaded_tool_does_nothing(tmp_path):
+    err = run_change(tmp_path, "T3 PREV=3\n")
+    assert "log= end=100.0,90.0,10.0" in err

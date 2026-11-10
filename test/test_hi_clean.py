@@ -7,9 +7,9 @@ from __future__ import annotations
 from test_hi_config import ROOT, parse_output, run_batch
 
 PHASE4 = ROOT / "config" / "hi" / "phase4.cfg"
-# NOZZLE_WIPE: touch_cnt (4) rounds of 3 touches, one more, then the metal
+# NOZZLE_WIPE: touch_cnt (2) rounds of 3 touches, one more, then the metal
 # plate before and after the PTFE wipe. NOZZLE_QUICK_WIPE: before and after.
-FULL_TOUCHES = 4 * 3 + 1 + 2
+FULL_TOUCHES = 2 * 3 + 1 + 2
 QUICK_TOUCHES = 2
 
 STUBS = """
@@ -92,3 +92,25 @@ def test_phase4_does_not_hook_cleaning_into_z_homing():
     for name in ("phase3.cfg", "phase4.cfg"):
         lines = (ROOT / "config" / "hi" / name).read_text().splitlines()
         assert not [x for x in lines if x.startswith("register_as_probe")]
+
+
+SEAL_STUB = """
+[gcode_macro M109]
+rename_existing: M109.1
+variable_last: 0
+gcode:
+  SET_GCODE_VARIABLE MACRO=M109 VARIABLE=last VALUE={params.S|float}
+  M104 S{params.S}
+
+[gcode_macro _SEAL]
+gcode:
+  {action_respond_info("seal=%.0f" % printer['gcode_macro M109'].last)}
+"""
+
+
+def test_sealing_temperature_is_a_parameter(tmp_path):
+    # The last blocking wait of NOZZLE_WIPE is the sealing temperature.
+    proc, _ = run(tmp_path, "NOZZLE_WIPE\n_SEAL\n", SEAL_STUB)
+    assert "seal=160" in proc.stderr
+    proc, _ = run(tmp_path, "NOZZLE_CLEAN SEAL_TEMP=130\n_SEAL\n", SEAL_STUB)
+    assert "seal=130" in proc.stderr

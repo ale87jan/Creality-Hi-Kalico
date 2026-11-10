@@ -1,0 +1,210 @@
+# Batch-mode checks of the user's print start/end macros ported to the Hi
+# (config/hi/print.cfg). Homing, cleaning, the mesh and the CFS are replaced
+# by recorders: the tests cover the order of the macro and the final state.
+from __future__ import annotations
+
+from test_hi_config import ROOT, run_batch
+
+PHASE6 = ROOT / "config" / "hi" / "phase6.cfg"
+
+
+def _rec(name, params="", header="", extra=""):
+    return f"""
+[gcode_macro {name}]
+{header}
+gcode:
+  {{% set log = printer['gcode_macro _REPORT'].log %}}
+  SET_GCODE_VARIABLE MACRO=_REPORT VARIABLE=log VALUE='"{{log}} {name}{params}"'
+  {extra}
+"""
+
+
+CLEAN = "SET_GCODE_VARIABLE MACRO=_HI_CLEAN VARIABLE=is_clean VALUE=1"
+
+STUBS = (
+    """
+[homing_override]
+gcode:
+  {% set log = printer['gcode_macro _REPORT'].log %}
+  SET_GCODE_VARIABLE MACRO=_REPORT VARIABLE=log VALUE='"{log} G28({rawparams})"'
+  SET_KINEMATIC_POSITION X=130 Y=130 Z=10
+
+[gcode_macro _REPORT]
+variable_log: ""
+gcode:
+  {% set p = printer.toolhead.position %}
+  {action_raise_error("log=%s bed=%.0f nozzle=%.0f pos=%.0f,%.0f,%.0f"
+    % (log, printer.heater_bed.target, printer.extruder.target,
+       p.x, p.y, p.z))}
+"""
+    + _rec("NOZZLE_WIPE", extra=CLEAN)
+    + _rec("NOZZLE_QUICK_WIPE", extra=CLEAN)
+    + _rec("_MESH_IF_NEEDED", "({rawparams})")
+    + _rec("_HI_CFS_GO_BIN")
+    + _rec("CFS_RETRUDE", "({rawparams})", "rename_existing: _REAL_CFS_RETRUDE")
+    + _rec("CFS_CUT", "", "rename_existing: _REAL_CFS_CUT")
+)
+
+
+def run(tmp_path, gcode):
+    config = tmp_path / "printer.cfg"
+    config.write_text(
+        f"[include {PHASE6}]\n"
+        "[serial_485 serial485]\n"
+        f"serial: {tmp_path / 'no-such-port'}\n" + STUBS
+    )
+    gcode_file = tmp_path / "test.gcode"
+    gcode_file.write_text(gcode + "_REPORT\n")
+    proc, _ = run_batch(gcode_file, tmp_path, config)
+    assert "Unknown command" not in proc.stderr
+    assert "Error evaluating 'gcode_macro _REPORT" in proc.stderr
+    return proc.stderr
+
+
+START = "START_PRINT BED_TEMP=60 EXTRUDER_TEMP=215\n"
+PREPARE = (
+    " _MESH_IF_NEEDED(BED_TEMP=60.0) G28(X Y) NOZZLE_WIPE"
+    " G28(Z ALIGN=1) G28(Z) _HI_CFS_GO_BIN"
+)
+
+
+def test_start_print_prepares_once_and_ends_at_print_temperatures(tmp_path):
+    err = run(tmp_path, START)
+    assert f"log={PREPARE} bed=60 nozzle=215" in err
+    # A second start in the same session skips homing and cleaning.
+    err = run(tmp_path, START + START)
+    assert (
+        f"log={PREPARE} _MESH_IF_NEEDED(BED_TEMP=60.0) _HI_CFS_GO_BIN bed=60"
+    ) in err
+
+
+def test_start_print_prepares_again_after_the_motors_are_released(tmp_path):
+    err = run(tmp_path, START + "M84\n" + START)
+    # The nozzle is still clean: quick wipe this time.
+    again = PREPARE.replace("NOZZLE_WIPE", "NOZZLE_QUICK_WIPE")
+    assert f"log={PREPARE}{again} bed=60" in err
+
+
+def test_end_print_lifts_parks_and_switches_the_heaters_off(tmp_path):
+    err = run(tmp_path, START + "G1 X100 Y100 Z20 F6000\nEND_PRINT\n")
+    # Z + 50, bed to the front, heaters off; the CFS unload is delayed.
+    assert "bed=0 nozzle=0 pos=0,260,70" in err
+    assert "CFS_RETRUDE" not in err.split("log=")[-1]
+
+
+def test_print_end_unloads_only_a_loaded_filament(tmp_path):
+    # The module reports no loaded tool after start-up: nothing to unload.
+    err = run(tmp_path, "_HI_CFS_PRINT_END\n")
+    assert "log= bed=0" in err
+
+
+def test_no_creality_only_command_is_left():
+    cfg = (ROOT / "config" / "hi" / "print.cfg").read_text()
+    live = [x.split("#")[0].strip() + " " for x in cfg.splitlines()]
+    for name in (
+        "BOX_START_PRINT",
+        "BOX_END_PRINT",
+        "BOX_END",
+        "NEXT_HOMEZ_NACCU",
+        "FORCE_MOVE_E",
+        "ZDOWN_SWITCH",
+        "ENABLE_PRESSURE_ADVANCE",
+    ):
+        assert not any(x.startswith(name + " ") for x in live), name
+    assert "custom_macro" not in "".join(live)
+
+
+MOVE = "G28\nM104 S215\nG1 X100 Y100 Z20 F6000\n"
+
+
+def test_pause_retracts_lifts_and_parks_at_the_front(tmp_path):
+    err = run(tmp_path, MOVE + "PAUSE\n")
+    # Below 48 mm the nozzle goes up to 50 mm; nozzle kept warm at 140.
+    assert "nozzle=140 pos=0,260,50" in err
+
+
+def test_resume_reheats_purges_over_the_bin_and_goes_back(tmp_path):
+    err = run(tmp_path, MOVE + "PAUSE\nRESUME\n")
+    # Batch mode reads the nozzle as cold, so RESUME takes the purge branch.
+    assert "log= G28() _HI_CFS_GO_BIN bed=0 nozzle=215 pos=100,100,20" in err
+
+
+def test_cancel_lifts_parks_and_releases_the_motors(tmp_path):
+    err = run(tmp_path, MOVE + "CANCEL_PRINT\n")
+    assert "bed=0 nozzle=0 pos=10,260,70" in err
+    assert "CFS_RETRUDE" not in err.split("log=")[-1]
+
+
+def test_pause_cuts_only_when_a_cfs_filament_is_loaded(tmp_path):
+    # No loaded tool after start-up: no cut. CUT=1 is what a loaded CFS
+    # filament selects; the nozzle still ends at 140 and parked.
+    assert "CFS_CUT" not in run(tmp_path, MOVE + "PAUSE\n").split("log=")[-1]
+    err = run(tmp_path, MOVE + "_HI_PAUSE_PARK CUT=1\n")
+    assert "log= G28() CFS_CUT bed=0 nozzle=140 pos=0,260,20" in err
+
+
+def test_first_layer_pause_parks_at_the_side_and_resumes(tmp_path):
+    err = run(tmp_path, MOVE + "FIRST_FLOOR_PAUSE\n")
+    # 2 mm up, X at 10 mm from the axis maximum (285), Y at half of it.
+    assert "pos=275,137,22" in err
+    err = run(tmp_path, MOVE + "FIRST_FLOOR_PAUSE\nFIRST_FLOOR_RESUME\n")
+    assert "pos=100,100,20" in err
+
+
+def test_first_layer_pause_position_waits_at_the_probe_temperature(tmp_path):
+    err = run(tmp_path, MOVE + "FIRST_FLOOR_PAUSE_POSITION\n")
+    assert "nozzle=140 pos=261,137,0" in err
+
+
+def test_m600_pauses_and_keeps_the_extruder_position(tmp_path):
+    err = run(tmp_path, MOVE + "M600\n")
+    assert "nozzle=140 pos=0,260,50" in err
+
+
+MODES = """
+[virtual_sdcard]
+path: {path}
+
+[gcode_macro _LIMITS]
+gcode:
+  {{% set t = printer.toolhead %}}
+  {{action_raise_error("limits %d %d %.2f %d pa=%.2f f=%.2f" % (
+    t.max_velocity, t.max_accel, t.minimum_cruise_ratio,
+    t.square_corner_velocity, printer.extruder.pressure_advance,
+    printer.gcode_move.speed_factor))}}
+"""
+
+
+def _modes(tmp_path, body):
+    config = tmp_path / "printer.cfg"
+    config.write_text(
+        f"[include {PHASE6}]\n"
+        "[serial_485 serial485]\n"
+        f"serial: {tmp_path / 'no-such-port'}\n"
+        + STUBS
+        + MODES.format(path=tmp_path)
+    )
+    (tmp_path / "job.gcode").write_text(body + "_LIMITS\n")
+    gcode_file = tmp_path / "test.gcode"
+    gcode_file.write_text("SDCARD_PRINT_FILE FILENAME=job.gcode\nG4 P2000\n")
+    proc, _ = run_batch(gcode_file, tmp_path, config)
+    assert "Unknown command" not in proc.stderr
+    return proc.stderr
+
+
+def test_modes_change_the_limits_only_while_printing(tmp_path):
+    base = _modes(tmp_path, "").split("limits ")[1].split("\n")[0]
+    err = _modes(tmp_path, "Qmode\n")
+    assert "limits 150 2500 0.00 5 pa=0.05 f=0.40" in err
+    err = _modes(tmp_path, "Rmode\n")
+    assert "limits 300 5000 0.00 10 pa=0.03 f=1.25" in err
+    for mode in ("Qmode", "Rmode"):
+        err = _modes(tmp_path, f"{mode}\n{mode}_exit\n")
+        assert f"limits {base}" in err
+
+
+def test_modes_have_no_creality_only_command():
+    cfg = (ROOT / "config" / "hi" / "modes.cfg").read_text()
+    live = "".join(x.split("#")[0] for x in cfg.splitlines())
+    for name in ("ACCEL_TO_DECEL", "SET_QMODE_FLAG", "SET_RMODE_FLAG"):
+        assert name not in live, name

@@ -39,3 +39,18 @@ def test_io_remap_configures_nozzle_mcu(tmp_path):
     assert not any(
         "config_ioRemap" in line for line in parse_output(out, "mcu")
     )
+
+
+def test_set_ioremap_sends_operation(tmp_path):
+    config = tmp_path / "printer.cfg"
+    config.write_text(IO_REMAP.format(config=CONFIG))
+    gcode = tmp_path / "io_remap.gcode"
+    gcode.write_text("SET_IOREMAP S=1\nSET_IOREMAP S=0\n")
+    proc, out = run_batch(gcode, tmp_path, config)
+    assert proc.returncode == 0, proc.stderr[-2000:]
+    operations = [
+        dict(f.split("=") for f in line.split() if "=" in f)["operation"]
+        for line in parse_output(out, "nozzle_mcu")
+        if "operation_ioRemap" in line
+    ]
+    assert operations == ["1", "0"]

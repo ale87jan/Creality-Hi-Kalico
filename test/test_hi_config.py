@@ -109,3 +109,62 @@ def test_phase1_config_rejects_homing_and_xy(tmp_path, gcode, error):
     main = parse_output(out, "mcu")
     assert set(XY_STEP_PINS) <= set(stepper_oids(main))
     assert stepped_oids(main) == set()
+
+
+def stock_bed_correction(raw):
+    "Bed temperature shown by the stock firmware for a raw thermistor value"
+    # [heater_bed] adc_temp_list / actual_temp_list of the printer's
+    # V1.1.0.60 config, applied as stock adc_temperature.py does: identity
+    # up to the first point, the last segment extended above.
+    adc = [25.0, 40.0, 53.0, 69.0, 83.0, 108.0]
+    actual = [25.0, 38.0, 50.0, 65.0, 80.0, 110.0]
+    if raw <= adc[0]:
+        return raw
+    i = max(j for j in range(5) if raw >= adc[j])
+    slope = (actual[i + 1] - actual[i]) / (adc[i + 1] - adc[i])
+    return (raw - adc[i]) * slope + actual[i]
+
+
+def test_bed_sensor_table_follows_the_stock_correction():
+    import configparser
+
+    from klippy.extras import adc_temperature, thermistor
+
+    def section(path, name):
+        parser = configparser.RawConfigParser(
+            strict=False, inline_comment_prefixes=("#",)
+        )
+        parser.read(path)
+        return dict(parser.items(name))
+
+    base = ROOT / "config" / "hi" / "base.cfg"
+    assert section(base, "heater_bed")["sensor_type"] == "hi_bed"
+    table = section(base, "adc_temperature hi_bed")
+    count = len(table) // 2
+    samples = [
+        (float(table[f"resistance{i}"]), float(table[f"temperature{i}"]))
+        for i in range(1, count + 1)
+    ]
+    assert len(table) == 2 * count and count >= 30
+    corrected = adc_temperature.LinearInterpolate(samples)
+
+    epcos = section(
+        ROOT / "klippy" / "extras" / "temperature_sensors.cfg",
+        "thermistor EPCOS 100K B57560G104F",
+    )
+    pullup = 4700.0
+    raw = thermistor.Thermistor(pullup, 0.0)
+    raw.setup_coefficients(
+        *[
+            float(epcos[f"{key}{i}"])
+            for i in (1, 2, 3)
+            for key in ("temperature", "resistance")
+        ],
+        name="EPCOS",
+    )
+    for tenth in range(-150, 1250):
+        temp = tenth / 10.0
+        adc = raw.calc_adc(temp)
+        resistance = pullup * adc / (1.0 - adc)
+        shown = corrected.interpolate(resistance)
+        assert shown == pytest.approx(stock_bed_correction(temp), abs=0.25)

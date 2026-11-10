@@ -16,9 +16,11 @@ MCUS = ("mcu", "nozzle_mcu", "bed_mcu")
 XY_STEP_PINS = ("PB10", "PB8")
 
 
-def run_batch(gcode: pathlib.Path, tmp_path: pathlib.Path):
+def run_batch(
+    gcode: pathlib.Path, tmp_path: pathlib.Path, config: pathlib.Path = CONFIG
+):
     out = tmp_path / "out"
-    cmd = [sys.executable, "-m", "klippy", str(CONFIG)]
+    cmd = [sys.executable, "-m", "klippy", str(config)]
     cmd += ["-i", str(gcode), "-o", str(out), "-v"]
     cmd += ["-d", str(HI / "mcu.dict")]
     for name in MCUS[1:]:

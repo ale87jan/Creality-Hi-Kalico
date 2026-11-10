@@ -330,3 +330,40 @@ def test_phase2_config_rejects_unsafe_moves(tmp_path, gcode, error):
     main = parse_output(out, "mcu")
     assert set(XY_STEP_PINS) <= set(stepper_oids(main))
     assert stepped_oids(main) == set()
+
+
+def render_home_xy(homed, x, **params):
+    """Render the _HI_HOME_XY macro of motors.cfg and return its commands."""
+    import jinja2
+
+    text = (ROOT / "config" / "hi" / "motors.cfg").read_text()
+    body = text.split("[gcode_macro _HI_HOME_XY]", 1)[1].split("gcode:\n", 1)[1]
+    template = "\n".join(line[2:] for line in body.splitlines())
+    printer = {"toolhead": {"homed_axes": homed, "position": {"x": x}}}
+    out = jinja2.Template(template).render(printer=printer, params=params)
+    return [" ".join(line.split()) for line in out.splitlines() if line.strip()]
+
+
+def test_home_xy_parks_x_at_zero_after_homing():
+    cmds = render_home_xy("", -19.0, X=1, Y=1)
+    assert "G28 X Y" in cmds
+    assert cmds.index("G1 X0 F6000") > cmds.index("G28 X Y")
+    assert "G1 X10 F6000" not in cmds
+
+
+def test_home_xy_steps_off_the_endstop_first():
+    cmds = render_home_xy("xy", -19.0, X=1)
+    assert cmds.index("G1 X10 F6000") < cmds.index("G28 X")
+    assert "G91" in cmds[: cmds.index("G1 X10 F6000")]
+    assert "G1 X0 F6000" in cmds
+
+
+def test_home_xy_does_not_step_off_when_x_is_far():
+    cmds = render_home_xy("xy", 120.0, X=1)
+    assert "G1 X10 F6000" not in cmds
+
+
+def test_home_y_alone_never_moves_x():
+    cmds = render_home_xy("xy", -19.0, Y=1)
+    assert "G28 Y" in cmds
+    assert not any(c.startswith("G1 X") for c in cmds)

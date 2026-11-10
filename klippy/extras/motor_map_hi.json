@@ -1,0 +1,1094 @@
+{
+  "x": {
+    "_addr": "0x81",
+    "_firmware": {
+      "identifier": "mot2_002_071",
+      "note": "value_id and value_type from the K2 map (mot2_002_081); all 77 ids read without error on the Hi. value is the one read on a stock Hi V1.1.0.60 on 2026-11-09, for reference only: it is never written."
+    },
+    "controller_cur_filter_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 128,
+      "value_type": "uint16_t"
+    },
+    "controller_cur_filter_param_fc": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 6000.0,
+      "value_id": 130,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_fal_param_a": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.2,
+      "value_id": 111,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_fal_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 110,
+      "value_type": "uint16_t"
+    },
+    "controller_cur_loop_pid_fal_param_zoom": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.25,
+      "value_id": 113,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_param_kc": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 105,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_param_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 200.0,
+      "value_id": 103,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_param_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 2.0,
+      "value_id": 102,
+      "value_type": "float"
+    },
+    "controller_fwc_param_I_max": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 5.5,
+      "value_id": 123,
+      "value_type": "float"
+    },
+    "controller_fwc_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 122,
+      "value_type": "uint16_t"
+    },
+    "controller_fwc_param_phi_e": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0.002037183,
+      "value_id": 125,
+      "value_type": "float"
+    },
+    "controller_fwc_param_wm_base": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 100.0,
+      "value_id": 127,
+      "value_type": "float"
+    },
+    "controller_leso_param_b0": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 60000.0,
+      "value_id": 117,
+      "value_type": "float"
+    },
+    "controller_leso_param_b0k": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 10.0,
+      "value_id": 116,
+      "value_type": "float"
+    },
+    "controller_leso_param_wd": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 400.0,
+      "value_id": 121,
+      "value_type": "float"
+    },
+    "controller_leso_param_wp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4000.0,
+      "value_id": 119,
+      "value_type": "float"
+    },
+    "controller_leso_param_ws": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4000.0,
+      "value_id": 120,
+      "value_type": "float"
+    },
+    "controller_leso_param_z3k": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.0,
+      "value_id": 118,
+      "value_type": "float"
+    },
+    "controller_param_en_feedforward_idiq": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 66,
+      "value_type": "uint16_t"
+    },
+    "controller_param_en_feedforward_uduq": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 67,
+      "value_type": "uint16_t"
+    },
+    "controller_pos_loop_pid_param_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 100.0,
+      "value_id": 70,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_fal_param_a": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.7,
+      "value_id": 95,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_fal_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 94,
+      "value_type": "uint16_t"
+    },
+    "controller_spd_loop_pid_fal_param_zoom": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 97,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_param_kc": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 89,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_param_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 50.0,
+      "value_id": 87,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_param_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.085,
+      "value_id": 86,
+      "value_type": "float"
+    },
+    "driver_board_param_R_of_current_sample_ohm": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0.05,
+      "value_id": 30,
+      "value_type": "float"
+    },
+    "driver_board_param_amp_gain": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 20.0,
+      "value_id": 28,
+      "value_type": "float"
+    },
+    "driver_board_param_power_supply_V": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 24.0,
+      "value_id": 26,
+      "value_type": "float"
+    },
+    "flash_manager_param_checksum_restore_en": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 168,
+      "value_type": "uint16_t"
+    },
+    "mcu_param_input_pulse_counter_filter_level": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 4,
+      "value_id": 64,
+      "value_type": "uint16_t"
+    },
+    "mcu_param_input_pulse_counter_trigger_mode": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 63,
+      "value_type": "uint16_t"
+    },
+    "motor_param_Ke": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1018592,
+      "value_id": 43,
+      "value_type": "float"
+    },
+    "motor_param_L": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.001,
+      "value_id": 42,
+      "value_type": "float"
+    },
+    "motor_param_R": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.6,
+      "value_id": 41,
+      "value_type": "float"
+    },
+    "param_boot_key": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 17030,
+      "value_id": 1,
+      "value_type": "uint16_t"
+    },
+    "param_elec_angle_calibration_standar_deg": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 15.0,
+      "value_id": 8,
+      "value_type": "float"
+    },
+    "param_elec_offset": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 294.3203,
+      "value_id": 9,
+      "value_type": "float"
+    },
+    "param_elec_offset_err_deg": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4.767962,
+      "value_id": 25,
+      "value_type": "float"
+    },
+    "param_emergency_pin_mode": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 11,
+      "value_type": "uint16_t"
+    },
+    "param_encoder_calibtate_official_ud_cal_set": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.15,
+      "value_id": 23,
+      "value_type": "float"
+    },
+    "param_flash_checksum": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 225,
+      "value_type": "uint16_t"
+    },
+    "param_flash_key": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 23333,
+      "value_id": 224,
+      "value_type": "uint16_t"
+    },
+    "param_flash_key_write_retries_num": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 5,
+      "value_id": 2,
+      "value_type": "uint16_t"
+    },
+    "param_flash_param_version": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 583,
+      "value_id": 0,
+      "value_type": "uint16_t"
+    },
+    "param_motion_dir": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 21,
+      "value_type": "float"
+    },
+    "param_phase_order_invert": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 10,
+      "value_type": "int16_t"
+    },
+    "param_pwm_period_s": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 3.5e-05,
+      "value_id": 4,
+      "value_type": "float"
+    },
+    "param_singleturn_control_mode": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 7,
+      "value_type": "uint16_t"
+    },
+    "param_stall_cur_A": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.7,
+      "value_id": 13,
+      "value_type": "float"
+    },
+    "param_stall_mode": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 2,
+      "value_id": 12,
+      "value_type": "uint16_t"
+    },
+    "param_stall_pos_err_rad": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.015,
+      "value_id": 14,
+      "value_type": "float"
+    },
+    "param_system_startup_delay_ms": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 100,
+      "value_id": 3,
+      "value_type": "uint16_t"
+    },
+    "param_task_period_s": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0.00014,
+      "value_id": 5,
+      "value_type": "float"
+    },
+    "param_ud_cal_set": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.15,
+      "value_id": 20,
+      "value_type": "float"
+    },
+    "param_use_default_param": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 6,
+      "value_type": "uint16_t"
+    },
+    "protection_err_code_backup": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 191,
+      "value_type": "uint32_t"
+    },
+    "protection_param_mcu_temp_max": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 115.0,
+      "value_id": 190,
+      "value_type": "float"
+    },
+    "protection_param_power_voltage_min": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 20.0,
+      "value_id": 189,
+      "value_type": "float"
+    },
+    "protection_param_protect_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 173,
+      "value_type": "uint16_t"
+    },
+    "protection_param_prt_continuous_clear_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 227,
+      "value_type": "float"
+    },
+    "protection_param_prt_continuous_cur_A": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4.0,
+      "value_id": 180,
+      "value_type": "float"
+    },
+    "protection_param_prt_continuous_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 181,
+      "value_type": "float"
+    },
+    "protection_param_prt_over_speed_rad_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 314.1593,
+      "value_id": 182,
+      "value_type": "float"
+    },
+    "protection_param_prt_over_speed_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 183,
+      "value_type": "float"
+    },
+    "protection_param_prt_peak_cur_A": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 999.0,
+      "value_id": 179,
+      "value_type": "float"
+    },
+    "protection_param_prt_track_err_time": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 188,
+      "value_type": "float"
+    },
+    "protection_param_prt_track_max_err": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 187,
+      "value_type": "float"
+    },
+    "protection_warning_code_backup": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 192,
+      "value_type": "uint32_t"
+    },
+    "step_controller_param_subdivision": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 16,
+      "value_id": 200,
+      "value_type": "uint16_t"
+    },
+    "zazen_param_zazen_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 217,
+      "value_type": "uint16_t"
+    },
+    "zazen_param_zazen_gain_cur_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 223,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_gain_cur_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 222,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_gain_spd_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 221,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_gain_spd_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 220,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_trigger_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 218,
+      "value_type": "float"
+    }
+  },
+  "y": {
+    "_addr": "0x82",
+    "_firmware": {
+      "identifier": "mot2_002_071",
+      "note": "value_id and value_type from the K2 map (mot2_002_081); all 77 ids read without error on the Hi. value is the one read on a stock Hi V1.1.0.60 on 2026-11-09, for reference only: it is never written."
+    },
+    "controller_cur_filter_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 128,
+      "value_type": "uint16_t"
+    },
+    "controller_cur_filter_param_fc": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 6000.0,
+      "value_id": 130,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_fal_param_a": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.2,
+      "value_id": 111,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_fal_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 110,
+      "value_type": "uint16_t"
+    },
+    "controller_cur_loop_pid_fal_param_zoom": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.25,
+      "value_id": 113,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_param_kc": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 105,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_param_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 200.0,
+      "value_id": 103,
+      "value_type": "float"
+    },
+    "controller_cur_loop_pid_param_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 2.0,
+      "value_id": 102,
+      "value_type": "float"
+    },
+    "controller_fwc_param_I_max": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 5.5,
+      "value_id": 123,
+      "value_type": "float"
+    },
+    "controller_fwc_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 122,
+      "value_type": "uint16_t"
+    },
+    "controller_fwc_param_phi_e": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0.00197352,
+      "value_id": 125,
+      "value_type": "float"
+    },
+    "controller_fwc_param_wm_base": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 100.0,
+      "value_id": 127,
+      "value_type": "float"
+    },
+    "controller_leso_param_b0": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 60000.0,
+      "value_id": 117,
+      "value_type": "float"
+    },
+    "controller_leso_param_b0k": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 10.0,
+      "value_id": 116,
+      "value_type": "float"
+    },
+    "controller_leso_param_wd": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 400.0,
+      "value_id": 121,
+      "value_type": "float"
+    },
+    "controller_leso_param_wp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4000.0,
+      "value_id": 119,
+      "value_type": "float"
+    },
+    "controller_leso_param_ws": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4000.0,
+      "value_id": 120,
+      "value_type": "float"
+    },
+    "controller_leso_param_z3k": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.0,
+      "value_id": 118,
+      "value_type": "float"
+    },
+    "controller_param_en_feedforward_idiq": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 66,
+      "value_type": "uint16_t"
+    },
+    "controller_param_en_feedforward_uduq": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 67,
+      "value_type": "uint16_t"
+    },
+    "controller_pos_loop_pid_param_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 100.0,
+      "value_id": 70,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_fal_param_a": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.7,
+      "value_id": 95,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_fal_param_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 94,
+      "value_type": "uint16_t"
+    },
+    "controller_spd_loop_pid_fal_param_zoom": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 97,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_param_kc": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 89,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_param_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 50.0,
+      "value_id": 87,
+      "value_type": "float"
+    },
+    "controller_spd_loop_pid_param_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.064999,
+      "value_id": 86,
+      "value_type": "float"
+    },
+    "driver_board_param_R_of_current_sample_ohm": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0.05,
+      "value_id": 30,
+      "value_type": "float"
+    },
+    "driver_board_param_amp_gain": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 20.0,
+      "value_id": 28,
+      "value_type": "float"
+    },
+    "driver_board_param_power_supply_V": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 24.0,
+      "value_id": 26,
+      "value_type": "float"
+    },
+    "flash_manager_param_checksum_restore_en": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 168,
+      "value_type": "uint16_t"
+    },
+    "mcu_param_input_pulse_counter_filter_level": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 4,
+      "value_id": 64,
+      "value_type": "uint16_t"
+    },
+    "mcu_param_input_pulse_counter_trigger_mode": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 63,
+      "value_type": "uint16_t"
+    },
+    "motor_param_Ke": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.098676,
+      "value_id": 43,
+      "value_type": "float"
+    },
+    "motor_param_L": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.0014,
+      "value_id": 42,
+      "value_type": "float"
+    },
+    "motor_param_R": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.78,
+      "value_id": 41,
+      "value_type": "float"
+    },
+    "param_boot_key": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 17030,
+      "value_id": 1,
+      "value_type": "uint16_t"
+    },
+    "param_elec_angle_calibration_standar_deg": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 15.0,
+      "value_id": 8,
+      "value_type": "float"
+    },
+    "param_elec_offset": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 259.2303,
+      "value_id": 9,
+      "value_type": "float"
+    },
+    "param_elec_offset_err_deg": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 5.514823,
+      "value_id": 25,
+      "value_type": "float"
+    },
+    "param_emergency_pin_mode": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 11,
+      "value_type": "uint16_t"
+    },
+    "param_encoder_calibtate_official_ud_cal_set": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.15,
+      "value_id": 23,
+      "value_type": "float"
+    },
+    "param_flash_checksum": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 225,
+      "value_type": "uint16_t"
+    },
+    "param_flash_key": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 23333,
+      "value_id": 224,
+      "value_type": "uint16_t"
+    },
+    "param_flash_key_write_retries_num": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 5,
+      "value_id": 2,
+      "value_type": "uint16_t"
+    },
+    "param_flash_param_version": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 583,
+      "value_id": 0,
+      "value_type": "uint16_t"
+    },
+    "param_motion_dir": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 21,
+      "value_type": "float"
+    },
+    "param_phase_order_invert": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 10,
+      "value_type": "int16_t"
+    },
+    "param_pwm_period_s": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 3.5e-05,
+      "value_id": 4,
+      "value_type": "float"
+    },
+    "param_singleturn_control_mode": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 7,
+      "value_type": "uint16_t"
+    },
+    "param_stall_cur_A": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.7,
+      "value_id": 13,
+      "value_type": "float"
+    },
+    "param_stall_mode": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 2,
+      "value_id": 12,
+      "value_type": "uint16_t"
+    },
+    "param_stall_pos_err_rad": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.015,
+      "value_id": 14,
+      "value_type": "float"
+    },
+    "param_system_startup_delay_ms": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 100,
+      "value_id": 3,
+      "value_type": "uint16_t"
+    },
+    "param_task_period_s": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0.00014,
+      "value_id": 5,
+      "value_type": "float"
+    },
+    "param_ud_cal_set": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.15,
+      "value_id": 20,
+      "value_type": "float"
+    },
+    "param_use_default_param": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 6,
+      "value_type": "uint16_t"
+    },
+    "protection_err_code_backup": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 191,
+      "value_type": "uint32_t"
+    },
+    "protection_param_mcu_temp_max": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 115.0,
+      "value_id": 190,
+      "value_type": "float"
+    },
+    "protection_param_power_voltage_min": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 20.0,
+      "value_id": 189,
+      "value_type": "float"
+    },
+    "protection_param_protect_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 173,
+      "value_type": "uint16_t"
+    },
+    "protection_param_prt_continuous_clear_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 227,
+      "value_type": "float"
+    },
+    "protection_param_prt_continuous_cur_A": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 4.0,
+      "value_id": 180,
+      "value_type": "float"
+    },
+    "protection_param_prt_continuous_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 181,
+      "value_type": "float"
+    },
+    "protection_param_prt_over_speed_rad_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 314.1593,
+      "value_id": 182,
+      "value_type": "float"
+    },
+    "protection_param_prt_over_speed_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 183,
+      "value_type": "float"
+    },
+    "protection_param_prt_peak_cur_A": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 999.0,
+      "value_id": 179,
+      "value_type": "float"
+    },
+    "protection_param_prt_track_err_time": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 188,
+      "value_type": "float"
+    },
+    "protection_param_prt_track_max_err": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.1,
+      "value_id": 187,
+      "value_type": "float"
+    },
+    "protection_warning_code_backup": {
+      "configurable": false,
+      "tolerance": 1e-06,
+      "value": 0,
+      "value_id": 192,
+      "value_type": "uint32_t"
+    },
+    "step_controller_param_subdivision": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 16,
+      "value_id": 200,
+      "value_type": "uint16_t"
+    },
+    "zazen_param_zazen_en": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1,
+      "value_id": 217,
+      "value_type": "uint16_t"
+    },
+    "zazen_param_zazen_gain_cur_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 223,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_gain_cur_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 222,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_gain_spd_ki": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 221,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_gain_spd_kp": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 0.5,
+      "value_id": 220,
+      "value_type": "float"
+    },
+    "zazen_param_zazen_trigger_time_s": {
+      "configurable": true,
+      "tolerance": 1e-06,
+      "value": 1.0,
+      "value_id": 218,
+      "value_type": "float"
+    }
+  }
+}

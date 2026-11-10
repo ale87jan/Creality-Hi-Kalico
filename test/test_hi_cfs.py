@@ -172,6 +172,7 @@ gcode:
 def test_purge_runs_the_flush_over_the_waste_bin(tmp_path):
     # CFS_FLUSH itself extrudes in place: CFS_PURGE must be at the bin
     # before it starts, and the short pass must come back to the bin.
+    # Z ends z_lift (3 mm) above where it started.
     config = tmp_path / "printer.cfg"
     config.write_text(
         f"[include {PHASE5}]\n"
@@ -181,7 +182,7 @@ def test_purge_runs_the_flush_over_the_waste_bin(tmp_path):
     gcode_file = tmp_path / "test.gcode"
     gcode_file.write_text("G28\nCFS_PURGE LEN=30\n_REPORT\n")
     proc, _ = run_batch(gcode_file, tmp_path, config)
-    assert "flush_at=-18.5,130.0 args=LEN=30 end=-18.5,130.0,10.0" in (
+    assert "flush_at=-18.5,130.0 args=LEN=30 end=-18.5,130.0,13.0" in (
         proc.stderr
     )
 

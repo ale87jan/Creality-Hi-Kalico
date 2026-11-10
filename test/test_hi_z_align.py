@@ -92,6 +92,26 @@ def test_phase4_g28_lifts_then_stops_without_xy_homing(tmp_path):
     assert stepped_oids(main) == set()
 
 
+@pytest.mark.parametrize(
+    "gcode, aligns",
+    [
+        ("_HI_ALIGN Z_HOMED=0 FORCE=0\n", 1),
+        ("_HI_ALIGN Z_HOMED=1 FORCE=0\n", 0),
+        ("_HI_ALIGN Z_HOMED=1 FORCE=1\n", 1),
+        ("ZDOWN_SWITCH ENABLE=0\n_HI_ALIGN Z_HOMED=0 FORCE=1\n", 0),
+    ],
+)
+def test_phase4_aligns_only_when_z_was_not_homed(tmp_path, gcode, aligns):
+    # A second G28 Z keeps the alignment (and the z_tilt correction) unless
+    # it is forced with G28 ALIGN=1; ZDOWN_SWITCH ENABLE=0 always wins.
+    proc, main = run(tmp_path, PHASE4, gcode)
+    assert proc.returncode == 0, proc.stderr[-2000:]
+    assert sum(1 for x in main if x.startswith("query_z_align ")) == aligns
+    cfg = PHASE4.read_text()
+    assert "_HI_ALIGN Z_HOMED={1 if 'z' in homed else 0}" in cfg
+    assert "FORCE={params.ALIGN|default(0)|int}" in cfg
+
+
 # --- simulated MCU ---------------------------------------------------------
 
 

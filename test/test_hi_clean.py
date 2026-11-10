@@ -76,6 +76,16 @@ def test_fine_cleaning_can_be_enabled(tmp_path):
     assert f"touches={FULL_TOUCHES} clean=1 busy=0" in proc.stderr
 
 
+def test_guard_skips_cleaning_until_reset(tmp_path):
+    # busy=1 is the state a cleaning that failed midway leaves behind (a
+    # command error cannot be replayed here: it ends the batch run).
+    stuck = "SET_GCODE_VARIABLE MACRO=_HI_CLEAN VARIABLE=busy VALUE=1\n"
+    proc, _ = run(tmp_path, stuck + "NOZZLE_CLEAN\n")
+    assert "touches=0 clean=0 busy=1" in proc.stderr
+    proc, _ = run(tmp_path, stuck + "NOZZLE_CLEAN_RESET\nNOZZLE_CLEAN\n")
+    assert f"touches={FULL_TOUCHES} clean=1 busy=0" in proc.stderr
+
+
 def test_phase4_does_not_hook_cleaning_into_z_homing():
     # The macros call G28 Z: the fork homing code must not call
     # NOZZLE_CLEAN back (it does when register_as_probe is set).

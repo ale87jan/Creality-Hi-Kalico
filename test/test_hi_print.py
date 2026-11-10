@@ -141,3 +141,70 @@ def test_pause_cuts_only_when_a_cfs_filament_is_loaded(tmp_path):
     assert "CFS_CUT" not in run(tmp_path, MOVE + "PAUSE\n").split("log=")[-1]
     err = run(tmp_path, MOVE + "_HI_PAUSE_PARK CUT=1\n")
     assert "log= G28() CFS_CUT bed=0 nozzle=140 pos=0,260,20" in err
+
+
+def test_first_layer_pause_parks_at_the_side_and_resumes(tmp_path):
+    err = run(tmp_path, MOVE + "FIRST_FLOOR_PAUSE\n")
+    # 2 mm up, X at 10 mm from the axis maximum (285), Y at half of it.
+    assert "pos=275,137,22" in err
+    err = run(tmp_path, MOVE + "FIRST_FLOOR_PAUSE\nFIRST_FLOOR_RESUME\n")
+    assert "pos=100,100,20" in err
+
+
+def test_first_layer_pause_position_waits_at_the_probe_temperature(tmp_path):
+    err = run(tmp_path, MOVE + "FIRST_FLOOR_PAUSE_POSITION\n")
+    assert "nozzle=140 pos=261,137,0" in err
+
+
+def test_m600_pauses_and_keeps_the_extruder_position(tmp_path):
+    err = run(tmp_path, MOVE + "M600\n")
+    assert "nozzle=140 pos=0,260,50" in err
+
+
+MODES = """
+[virtual_sdcard]
+path: {path}
+
+[gcode_macro _LIMITS]
+gcode:
+  {{% set t = printer.toolhead %}}
+  {{action_raise_error("limits %d %d %.2f %d pa=%.2f f=%.2f" % (
+    t.max_velocity, t.max_accel, t.minimum_cruise_ratio,
+    t.square_corner_velocity, printer.extruder.pressure_advance,
+    printer.gcode_move.speed_factor))}}
+"""
+
+
+def _modes(tmp_path, body):
+    config = tmp_path / "printer.cfg"
+    config.write_text(
+        f"[include {PHASE6}]\n"
+        "[serial_485 serial485]\n"
+        f"serial: {tmp_path / 'no-such-port'}\n"
+        + STUBS
+        + MODES.format(path=tmp_path)
+    )
+    (tmp_path / "job.gcode").write_text(body + "_LIMITS\n")
+    gcode_file = tmp_path / "test.gcode"
+    gcode_file.write_text("SDCARD_PRINT_FILE FILENAME=job.gcode\nG4 P2000\n")
+    proc, _ = run_batch(gcode_file, tmp_path, config)
+    assert "Unknown command" not in proc.stderr
+    return proc.stderr
+
+
+def test_modes_change_the_limits_only_while_printing(tmp_path):
+    base = _modes(tmp_path, "").split("limits ")[1].split("\n")[0]
+    err = _modes(tmp_path, "Qmode\n")
+    assert "limits 150 2500 0.00 5 pa=0.05 f=0.40" in err
+    err = _modes(tmp_path, "Rmode\n")
+    assert "limits 300 5000 0.00 10 pa=0.03 f=1.25" in err
+    for mode in ("Qmode", "Rmode"):
+        err = _modes(tmp_path, f"{mode}\n{mode}_exit\n")
+        assert f"limits {base}" in err
+
+
+def test_modes_have_no_creality_only_command():
+    cfg = (ROOT / "config" / "hi" / "modes.cfg").read_text()
+    live = "".join(x.split("#")[0] for x in cfg.splitlines())
+    for name in ("ACCEL_TO_DECEL", "SET_QMODE_FLAG", "SET_RMODE_FLAG"):
+        assert name not in live, name

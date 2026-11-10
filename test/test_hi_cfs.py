@@ -143,3 +143,49 @@ def test_module_never_opens_the_port_on_the_shared_bus(monkeypatch):
     cfs.serial_name = "serial_485 missing"
     with pytest.raises(RuntimeError, match="serial_485 missing"):
         cfs._connect_serial()
+
+
+PURGE_STUBS = """
+[homing_override]
+gcode:
+  SET_KINEMATIC_POSITION X=130 Y=200 Z=10
+
+[gcode_macro CFS_FLUSH]
+rename_existing: _REAL_CFS_FLUSH
+variable_at: ""
+variable_args: ""
+gcode:
+  {% set p = printer.toolhead.position %}
+  SET_GCODE_VARIABLE MACRO=CFS_FLUSH VARIABLE=at VALUE='"{"%.1f,%.1f" % (p.x, p.y)}"'
+  SET_GCODE_VARIABLE MACRO=CFS_FLUSH VARIABLE=args VALUE='"{rawparams}"'
+  _HI_CFS_SHAKE
+
+[gcode_macro _REPORT]
+gcode:
+  {% set f = printer['gcode_macro CFS_FLUSH'] %}
+  {% set p = printer.toolhead.position %}
+  {action_raise_error("flush_at=%s args=%s end=%.1f,%.1f,%.1f"
+    % (f.at, f.args, p.x, p.y, p.z))}
+"""
+
+
+def test_purge_runs_the_flush_over_the_waste_bin(tmp_path):
+    # CFS_FLUSH itself extrudes in place: CFS_PURGE must be at the bin
+    # before it starts, and the short pass must come back to the bin.
+    config = tmp_path / "printer.cfg"
+    config.write_text(
+        f"[include {PHASE5}]\n"
+        "[serial_485 serial485]\n"
+        f"serial: {tmp_path / 'no-such-port'}\n" + PURGE_STUBS
+    )
+    gcode_file = tmp_path / "test.gcode"
+    gcode_file.write_text("G28\nCFS_PURGE LEN=30\n_REPORT\n")
+    proc, _ = run_batch(gcode_file, tmp_path, config)
+    assert "flush_at=-18.5,130.0 args=LEN=30 end=-18.5,130.0,10.0" in (
+        proc.stderr
+    )
+
+
+def test_flush_calls_the_hi_short_pass():
+    cfg = (ROOT / "config" / "hi" / "cfs.cfg").read_text()
+    assert "\nnozzle_clean_macro: _HI_CFS_SHAKE\n" in cfg

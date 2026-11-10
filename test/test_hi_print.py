@@ -42,6 +42,7 @@ gcode:
     + _rec("_MESH_IF_NEEDED", "({rawparams})")
     + _rec("_HI_CFS_GO_BIN")
     + _rec("CFS_RETRUDE", "({rawparams})", "rename_existing: _REAL_CFS_RETRUDE")
+    + _rec("CFS_CUT", "", "rename_existing: _REAL_CFS_CUT")
 )
 
 
@@ -132,3 +133,11 @@ def test_cancel_lifts_parks_and_releases_the_motors(tmp_path):
     err = run(tmp_path, MOVE + "CANCEL_PRINT\n")
     assert "bed=0 nozzle=0 pos=10,260,70" in err
     assert "CFS_RETRUDE" not in err.split("log=")[-1]
+
+
+def test_pause_cuts_only_when_a_cfs_filament_is_loaded(tmp_path):
+    # No loaded tool after start-up: no cut. CUT=1 is what a loaded CFS
+    # filament selects; the nozzle still ends at 140 and parked.
+    assert "CFS_CUT" not in run(tmp_path, MOVE + "PAUSE\n").split("log=")[-1]
+    err = run(tmp_path, MOVE + "_HI_PAUSE_PARK CUT=1\n")
+    assert "log= G28() CFS_CUT bed=0 nozzle=140 pos=0,260,20" in err

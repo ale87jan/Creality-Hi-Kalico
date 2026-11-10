@@ -111,3 +111,24 @@ def test_no_creality_only_command_is_left():
     ):
         assert not any(x.startswith(name + " ") for x in live), name
     assert "custom_macro" not in "".join(live)
+
+
+MOVE = "G28\nM104 S215\nG1 X100 Y100 Z20 F6000\n"
+
+
+def test_pause_retracts_lifts_and_parks_at_the_front(tmp_path):
+    err = run(tmp_path, MOVE + "PAUSE\n")
+    # Below 48 mm the nozzle goes up to 50 mm; nozzle kept warm at 140.
+    assert "nozzle=140 pos=0,260,50" in err
+
+
+def test_resume_reheats_purges_over_the_bin_and_goes_back(tmp_path):
+    err = run(tmp_path, MOVE + "PAUSE\nRESUME\n")
+    # Batch mode reads the nozzle as cold, so RESUME takes the purge branch.
+    assert "log= G28() _HI_CFS_GO_BIN bed=0 nozzle=215 pos=100,100,20" in err
+
+
+def test_cancel_lifts_parks_and_releases_the_motors(tmp_path):
+    err = run(tmp_path, MOVE + "CANCEL_PRINT\n")
+    assert "bed=0 nozzle=0 pos=10,260,70" in err
+    assert "CFS_RETRUDE" not in err.split("log=")[-1]

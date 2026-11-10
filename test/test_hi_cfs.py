@@ -190,3 +190,16 @@ def test_purge_runs_the_flush_over_the_waste_bin(tmp_path):
 def test_flush_calls_the_hi_short_pass():
     cfg = (ROOT / "config" / "hi" / "cfs.cfg").read_text()
     assert "\nnozzle_clean_macro: _HI_CFS_SHAKE\n" in cfg
+
+
+def test_box_state_carries_temperature_and_humidity():
+    # b0/b1 of the 0x0A reply are the box temperature (C) and humidity (%).
+    reply = creality_cfs.build_message(
+        BOX, 0x00, 0x0A, bytes([0x1C, 0x24, 0x00, 0x02])
+    )
+    cfs = make([reply])
+    cfs._box_env = {}
+    cfs._note_box_status = lambda *args: None
+    state = cfs.get_box_state(BOX)
+    assert (state["temperature_c"], state["humidity_pct"]) == (28, 36)
+    assert state["loaded"] and cfs._box_env[BOX]["humidity_pct"] == 36

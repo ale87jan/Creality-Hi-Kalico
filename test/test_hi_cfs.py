@@ -182,7 +182,7 @@ def test_purge_runs_the_flush_over_the_waste_bin(tmp_path):
     gcode_file = tmp_path / "test.gcode"
     gcode_file.write_text("G28\nCFS_PURGE LEN=30\n_REPORT\n")
     proc, _ = run_batch(gcode_file, tmp_path, config)
-    assert "flush_at=-18.5,130.0 args=LEN=30 end=-18.5,130.0,13.0" in (
+    assert "flush_at=-18.5,261.0 args=LEN=30 end=-18.5,261.0,13.0" in (
         proc.stderr
     )
 

@@ -19,6 +19,8 @@ gcode:
 """
 
 
+CLEAN = "SET_GCODE_VARIABLE MACRO=_HI_CLEAN VARIABLE=is_clean VALUE=1"
+
 STUBS = (
     """
 [homing_override]
@@ -35,8 +37,8 @@ gcode:
     % (log, printer.heater_bed.target, printer.extruder.target,
        p.x, p.y, p.z))}
 """
-    + _rec("NOZZLE_WIPE")
-    + _rec("NOZZLE_QUICK_WIPE")
+    + _rec("NOZZLE_WIPE", extra=CLEAN)
+    + _rec("NOZZLE_QUICK_WIPE", extra=CLEAN)
     + _rec("_MESH_IF_NEEDED", "({rawparams})")
     + _rec("_HI_CFS_GO_BIN")
     + _rec("CFS_RETRUDE", "({rawparams})", "rename_existing: _REAL_CFS_RETRUDE")
@@ -77,7 +79,9 @@ def test_start_print_prepares_once_and_ends_at_print_temperatures(tmp_path):
 
 def test_start_print_prepares_again_after_the_motors_are_released(tmp_path):
     err = run(tmp_path, START + "M84\n" + START)
-    assert f"log={PREPARE}{PREPARE} bed=60" in err
+    # The nozzle is still clean: quick wipe this time.
+    again = PREPARE.replace("NOZZLE_WIPE", "NOZZLE_QUICK_WIPE")
+    assert f"log={PREPARE}{again} bed=60" in err
 
 
 def test_end_print_lifts_parks_and_switches_the_heaters_off(tmp_path):
